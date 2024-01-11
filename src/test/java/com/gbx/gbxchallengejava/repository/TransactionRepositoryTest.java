@@ -27,9 +27,11 @@ class TransactionRepositoryTest {
     private Transaction transaction1;
     private Transaction transaction2;
     @Autowired
-    TransactionRepository transactionRepository;
+    private TransactionRepository transactionRepository;
+
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
 
     @BeforeEach
     void setUp() {
