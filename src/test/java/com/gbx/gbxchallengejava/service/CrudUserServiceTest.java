@@ -42,19 +42,19 @@ class CrudUserServiceTest {
     }
 
     @Test
-    void shoudUserBeCreated() {
+    void shoudUserBeCreatedTest() {
         assertDoesNotThrow(() -> crudUserService.createUser(userDto));
         Mockito.verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 
     @Test
-    void shouldThrowsExceptionIfErrorCreateUser() {
+    void shouldThrowsExceptionIfErrorCreateUserTest() {
         doThrow(RuntimeException.class).when(userRepository).save(any(User.class));
         assertThrows(UserNotFoundException.class, () -> crudUserService.createUser(userDto));
     }
 
     @Test
-    void shouldUserBeUpdated() {
+    void shouldUserBeUpdatedTest() {
         UserDto userDto = new UserDto();
         userDto.setId("1");
         userDto.setName("Updated User");
@@ -67,13 +67,13 @@ class CrudUserServiceTest {
     }
 
     @Test
-    void shouldThrowsExceptionIfErrorUpdateUser() {
+    void shouldThrowsExceptionIfErrorUpdateUserTest() {
         doThrow(RuntimeException.class).when(userRepository).save(any(User.class));
         assertThrows(UserNotFoundException.class, () -> crudUserService.updateUser(userDto));
     }
 
     @Test
-    void shouldUsersBeListed() {
+    void shouldUsersBeListedTest() {
         when(userRepository.findAll()).thenReturn(Arrays.asList(
                 user1,
                 user2
@@ -84,13 +84,13 @@ class CrudUserServiceTest {
     }
 
     @Test
-    void shouldThrowsExceptionIfUserNotListed() {
+    void shouldThrowsExceptionIfUserNotListedTest() {
         doThrow(RuntimeException.class).when(userRepository).findAll();
         assertThrows(UserNotFoundException.class, () -> crudUserService.updateUser(userDto));
     }
 
     @Test
-    void shouldFindUserById() {
+    void shouldFindUserByIdTest() {
         Long userId = 1L;
         when(userRepository.findById(userId)).thenReturn(Optional.of(user1));
         User foundUser = crudUserService.findUserById(userId);
@@ -99,21 +99,21 @@ class CrudUserServiceTest {
     }
 
     @Test
-    void shouldThrowsExceptionIfFindUserByIdNotFound() {
+    void shouldThrowsExceptionIfFindUserByIdNotFoundTest() {
         Long userId = 1L;
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class, () -> crudUserService.findUserById(userId));
     }
 
     @Test
-    void shoudDeleteUser() {
+    void shoudDeleteUserTest() {
         Long userId = 1L;
         assertDoesNotThrow(() -> crudUserService.deleteUser(userId));
         Mockito.verify(userRepository, Mockito.times(1)).deleteById(userId);
     }
 
     @Test
-    void shouldThrowsExceptionIfDeleteUserNotFound() {
+    void shouldThrowsExceptionIfDeleteUserNotFoundTest() {
         Long userId = 1L;
         doThrow(new EmptyResultDataAccessException(1)).when(userRepository).deleteById(userId);
         assertThrows(UserNotFoundException.class, () -> crudUserService.deleteUser(userId));

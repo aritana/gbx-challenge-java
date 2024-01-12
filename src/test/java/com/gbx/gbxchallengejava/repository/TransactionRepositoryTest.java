@@ -35,45 +35,24 @@ class TransactionRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        user1 = User.builder()
-                .name("Machado de Assis")
-                .accountNumber(123456)
-                .balance(new BigDecimal(100))
-                .build();
-
-        user2 = User.builder()
-                .name("Riobaldo Tatarana")
-                .accountNumber(123457)
-                .balance(new BigDecimal(200))
-                .build();
-
+        createUsers();
+        createTransactions();
         userRepository.save(user1);
         userRepository.save(user2);
     }
-
     @AfterEach
     void tearDown() {
         transactionRepository.deleteAll();
         userRepository.deleteAll();
     }
-
     @Test
     public void shouldCreateTransactionTest() {
-        Transaction transaction = Transaction.builder()
-                .origin(user1)
-                .destination(user2)
-                .value(new BigDecimal(100))
-                .date(LocalDateTime.now())
-                .build();
-        Transaction persistedTransaction = transactionRepository.save(transaction);
+        Transaction persistedTransaction = transactionRepository.save(transaction1);
         assertNotNull(persistedTransaction.getId());
     }
-
     @Test
     public void shouldFindTransactionOriginByUserTest() {
-        createTransactions();
         transactionRepository.saveAll(List.of(transaction1, transaction2));
-
         // Find transactions for user1
         List<Transaction> transactionsForUser1 = transactionRepository.findByOrigin(user1.getId());
         assertEquals(2, transactionsForUser1.size());
@@ -81,9 +60,7 @@ class TransactionRepositoryTest {
 
     @Test
     public void shouldFindTransactionDestinationByUserTest() {
-        createTransactions();
         transactionRepository.saveAll(List.of(transaction1, transaction2));
-
         // Find transactions for user1
         List<Transaction> transactionsForUser2 = transactionRepository.findByDestination(user2.getId());
         assertEquals(2, transactionsForUser2.size());
@@ -102,6 +79,20 @@ class TransactionRepositoryTest {
                 .destination(user2)
                 .value(new BigDecimal(200))
                 .date(LocalDateTime.now())
+                .build();
+    }
+
+    public void createUsers() {
+        user1 = User.builder()
+                .name("Machado de Assis")
+                .accountNumber(123456)
+                .balance(new BigDecimal(100))
+                .build();
+
+        user2 = User.builder()
+                .name("Riobaldo Tatarana")
+                .accountNumber(123457)
+                .balance(new BigDecimal(200))
                 .build();
     }
 }
