@@ -1,0 +1,38 @@
+# Spring Boot
+/target/
+/build/
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+*.class
+
+# Maven
+mvnw
+.mvn/
+
+# Gradle
+gradle/
+.gradle/
+build/
+
+# Logs
+logs/
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IntelliJ-specific
+.idea/
+
+# Eclipse-specific
+.settings/
+.classpath
+.project
+
+# Spring Boot generated files
+spring-boot-starter-data-jpa.log
