@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CrudUserService {
+public class UserService {
     @Autowired
     UserRepository userRepository;
 
@@ -23,7 +23,7 @@ public class CrudUserService {
     private BigDecimal balance;
     private Long id;
 
-    public void createUser(UserDto userDto) {
+    public User createUser(UserDto userDto) {
         try {
             name = userDto.getName();
             accountNumber = Integer.parseInt(userDto.getAccountNumber());
@@ -34,7 +34,7 @@ public class CrudUserService {
                     .accountNumber(accountNumber)
                     .balance(balance)
                     .build();
-            userRepository.save(user);
+            return userRepository.save(user);
 
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -42,11 +42,14 @@ public class CrudUserService {
         }
     }
 
-    public void updateUser(UserDto userDto) {
+    public User updateUser(UserDto userDto) {
         try {
             name = userDto.getName();
             accountNumber = Integer.parseInt(userDto.getAccountNumber());
             balance = new BigDecimal(userDto.getBalance());
+            if (userDto.getId() == null) {
+                throw new IllegalArgumentException("User ID is required for update.");
+            }
             id = Long.parseLong(userDto.getId());
             User user = User.builder()
                     .id(id)
@@ -54,7 +57,7 @@ public class CrudUserService {
                     .accountNumber(accountNumber)
                     .balance(balance)
                     .build();
-            userRepository.save(user);
+            return userRepository.save(user);
         } catch (RuntimeException e) {
             e.printStackTrace();
             throw new UserNotFoundException("Not possible to update User", e);

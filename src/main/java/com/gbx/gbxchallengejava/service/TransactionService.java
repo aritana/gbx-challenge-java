@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-public class CrudTransactionService {
+public class TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
@@ -26,13 +26,13 @@ public class CrudTransactionService {
     private UserRepository userRepository;
 
     @Autowired
-    CrudUserService crudUserService;
+    UserService userService;
 
     public void createTransaction(TransactionDto transactionDto) {
         try {
 
-            User origin = crudUserService.findUserById(Long.parseLong(transactionDto.getUserOriginId()));
-            User destination = crudUserService.findUserById(Long.parseLong(transactionDto.getUserDestinationId()));
+            User origin = userService.findUserById(Long.parseLong(transactionDto.getUserOriginId()));
+            User destination = userService.findUserById(Long.parseLong(transactionDto.getUserDestinationId()));
 
             Transaction transaction = Transaction.builder()
                     .origin(origin)

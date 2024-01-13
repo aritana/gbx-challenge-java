@@ -1,2 +1,4 @@
-package com.gbx.gbxchallengejava.controller;public class TransactionController {
+package com.gbx.gbxchallengejava.controller;
+
+public class TransactionController {
 }

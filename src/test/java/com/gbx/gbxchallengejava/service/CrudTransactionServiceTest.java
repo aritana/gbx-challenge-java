@@ -22,9 +22,9 @@ class CrudTransactionServiceTest {
     @Mock
     private TransactionRepository transactionRepository;
     @Mock
-    private CrudUserService crudUserService;
+    private UserService crudUserService;
     @InjectMocks
-    private CrudTransactionService crudTransactionService;
+    private TransactionService transactionService;
 
     @BeforeEach
     void setUp() {
@@ -47,7 +47,7 @@ class CrudTransactionServiceTest {
                 .userDestinationId("2")
                 .value("100.00").build();
 
-        assertDoesNotThrow(() -> crudTransactionService.createTransaction(transactionDto));
+        assertDoesNotThrow(() -> transactionService.createTransaction(transactionDto));
 
         verify(transactionRepository, times(1)).save(argThat(transaction ->
                 transaction.getOrigin().getId().equals(1L) &&
@@ -63,7 +63,7 @@ class CrudTransactionServiceTest {
         transactionDto.setValue("100.00");
 
         when(crudUserService.findUserById(Mockito.anyLong())).thenThrow(RuntimeException.class);
-        assertThrows(RuntimeException.class, () -> crudTransactionService.createTransaction(transactionDto));
+        assertThrows(RuntimeException.class, () -> transactionService.createTransaction(transactionDto));
     }
 
     @Test
@@ -71,7 +71,7 @@ class CrudTransactionServiceTest {
         Transaction transaction = new Transaction();
 
         when(transactionRepository.findAll()).thenReturn(Collections.singletonList(transaction));
-        List<TransactionDto> result = crudTransactionService.listAllTransactions();
+        List<TransactionDto> result = transactionService.listAllTransactions();
         assertEquals(1, result.size());
     }
 
@@ -83,7 +83,7 @@ class CrudTransactionServiceTest {
         transactionDto.setValue("100.00");
 
         when(transactionRepository.findAll()).thenThrow(RuntimeException.class);
-        assertThrows(RuntimeException.class, () -> crudTransactionService.listAllTransactions());
+        assertThrows(RuntimeException.class, () -> transactionService.listAllTransactions());
     }
 
     @Test
@@ -91,7 +91,7 @@ class CrudTransactionServiceTest {
         Long destinationUserId = 1L;
         Transaction transaction = new Transaction();
         when(transactionRepository.findByDestination(destinationUserId)).thenReturn(Collections.singletonList(transaction));
-        List<TransactionDto> result = crudTransactionService.findTransactionsByDestination(destinationUserId);
+        List<TransactionDto> result = transactionService.findTransactionsByDestination(destinationUserId);
         assertEquals(1, result.size());
     }
 
@@ -99,7 +99,7 @@ class CrudTransactionServiceTest {
     void shouldThrowExceptionWhenNotFindTransactionsByDestinationTest() {
         Long destinationUserId = 1L;
         when(transactionRepository.findByDestination(Mockito.anyLong())).thenThrow(RuntimeException.class);
-        assertThrows(RuntimeException.class, () -> crudTransactionService.findTransactionsByDestination(destinationUserId));
+        assertThrows(RuntimeException.class, () -> transactionService.findTransactionsByDestination(destinationUserId));
     }
 
     @Test
@@ -107,7 +107,7 @@ class CrudTransactionServiceTest {
         Long destinationUserId = 1L;
         Transaction transaction = new Transaction();
         when(transactionRepository.findByOrigin(destinationUserId)).thenReturn(Collections.singletonList(transaction));
-        List<TransactionDto> result = crudTransactionService.findTransactionsByOrigin(destinationUserId);
+        List<TransactionDto> result = transactionService.findTransactionsByOrigin(destinationUserId);
         assertEquals(1, result.size());
     }
 
@@ -115,6 +115,6 @@ class CrudTransactionServiceTest {
     void shouldThrowExceptionWhenNotFindTransactionsByOriginTest() {
         Long destinationUserId = 1L;
         when(transactionRepository.findByOrigin(Mockito.anyLong())).thenThrow(RuntimeException.class);
-        assertThrows(RuntimeException.class, () -> crudTransactionService.findTransactionsByOrigin(destinationUserId));
+        assertThrows(RuntimeException.class, () -> transactionService.findTransactionsByOrigin(destinationUserId));
     }
 }

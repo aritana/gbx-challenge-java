@@ -22,13 +22,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-class CrudUserServiceTest {
+class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
-    private CrudUserService crudUserService;
+    private UserService userService;
 
     private User user1;
     private User user2;
@@ -43,14 +43,14 @@ class CrudUserServiceTest {
 
     @Test
     void shoudUserBeCreatedTest() {
-        assertDoesNotThrow(() -> crudUserService.createUser(userDto));
+        assertDoesNotThrow(() -> userService.createUser(userDto));
         Mockito.verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 
     @Test
     void shouldThrowsExceptionIfErrorCreateUserTest() {
         doThrow(RuntimeException.class).when(userRepository).save(any(User.class));
-        assertThrows(UserNotFoundException.class, () -> crudUserService.createUser(userDto));
+        assertThrows(UserNotFoundException.class, () -> userService.createUser(userDto));
     }
 
     @Test
@@ -62,14 +62,15 @@ class CrudUserServiceTest {
         userDto.setBalance("200");
 
         when(userRepository.save(any(User.class))).thenReturn(new User());
-        assertDoesNotThrow(() -> crudUserService.updateUser(userDto));
+        assertDoesNotThrow(() -> userService.updateUser(userDto));
         Mockito.verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 
     @Test
     void shouldThrowsExceptionIfErrorUpdateUserTest() {
+        userDto.setId("1");
         doThrow(RuntimeException.class).when(userRepository).save(any(User.class));
-        assertThrows(UserNotFoundException.class, () -> crudUserService.updateUser(userDto));
+        assertThrows(UserNotFoundException.class, () -> userService.updateUser(userDto));
     }
 
     @Test
@@ -78,22 +79,23 @@ class CrudUserServiceTest {
                 user1,
                 user2
         ));
-        List<UserDto> userDtoList = crudUserService.listUsers();
+        List<UserDto> userDtoList = userService.listUsers();
         assertNotNull(userDtoList);
         assertEquals(2, userDtoList.size());
     }
 
     @Test
     void shouldThrowsExceptionIfUserNotListedTest() {
-        doThrow(RuntimeException.class).when(userRepository).findAll();
-        assertThrows(UserNotFoundException.class, () -> crudUserService.updateUser(userDto));
+        userDto.setId("1");
+        doThrow(UserNotFoundException.class).when(userRepository).findAll();
+        assertThrows(UserNotFoundException.class, () -> userService.listUsers());
     }
 
     @Test
     void shouldFindUserByIdTest() {
         Long userId = 1L;
         when(userRepository.findById(userId)).thenReturn(Optional.of(user1));
-        User foundUser = crudUserService.findUserById(userId);
+        User foundUser = userService.findUserById(userId);
         assertNotNull(foundUser);
         assertEquals(userId, foundUser.getId());
     }
@@ -102,13 +104,13 @@ class CrudUserServiceTest {
     void shouldThrowsExceptionIfFindUserByIdNotFoundTest() {
         Long userId = 1L;
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class, () -> crudUserService.findUserById(userId));
+        assertThrows(UserNotFoundException.class, () -> userService.findUserById(userId));
     }
 
     @Test
     void shoudDeleteUserTest() {
         Long userId = 1L;
-        assertDoesNotThrow(() -> crudUserService.deleteUser(userId));
+        assertDoesNotThrow(() -> userService.deleteUser(userId));
         Mockito.verify(userRepository, Mockito.times(1)).deleteById(userId);
     }
 
@@ -116,7 +118,7 @@ class CrudUserServiceTest {
     void shouldThrowsExceptionIfDeleteUserNotFoundTest() {
         Long userId = 1L;
         doThrow(new EmptyResultDataAccessException(1)).when(userRepository).deleteById(userId);
-        assertThrows(UserNotFoundException.class, () -> crudUserService.deleteUser(userId));
+        assertThrows(UserNotFoundException.class, () -> userService.deleteUser(userId));
     }
 
     public void createUsers() {
