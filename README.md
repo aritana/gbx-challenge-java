@@ -19,3 +19,6 @@ Sinta-se livre para aprofundar a implementação do seu serviço, conforme o seu
 - Java 11+
 - Spring Boot
 - SQL
+- 
+### Execução
+http://localhost:8080/swagger-ui/index.html#

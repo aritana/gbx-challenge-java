@@ -14,14 +14,14 @@ import java.util.stream.StreamSupport;
 @NoArgsConstructor
 @Data
 @Builder
-public class UserDto {
+public class UserResponseDto {
     private String id;
     private String name;
     private String accountNumber;
     private String balance;
 
-    public static UserDto convertToDto(User user) {
-        return UserDto.builder()
+    public static UserResponseDto convertToDto(User user) {
+        return UserResponseDto.builder()
                 .id(String.valueOf(user.getId()))
                 .name(user.getName())
                 .accountNumber(String.valueOf(user.getAccountNumber()))
@@ -29,9 +29,9 @@ public class UserDto {
                 .build();
     }
 
-    public static List<UserDto> convertToDtoList(Iterable<User> usersIterable) {
+    public static List<UserResponseDto> convertToDtoList(Iterable<User> usersIterable) {
         return StreamSupport.stream(usersIterable.spliterator(), false)
-                .map(UserDto::convertToDto)
+                .map(UserResponseDto::convertToDto)
                 .collect(Collectors.toList());
     }
 }

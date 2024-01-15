@@ -1,6 +1,7 @@
 package com.gbx.gbxchallengejava.service;
 
-import com.gbx.gbxchallengejava.dto.UserDto;
+import com.gbx.gbxchallengejava.dto.UserRequestDto;
+import com.gbx.gbxchallengejava.dto.UserResponseDto;
 import com.gbx.gbxchallengejava.exception.UserNotFoundException;
 import com.gbx.gbxchallengejava.orm.User;
 import com.gbx.gbxchallengejava.repository.UserRepository;
@@ -23,11 +24,11 @@ public class UserService {
     private BigDecimal balance;
     private Long id;
 
-    public User createUser(UserDto userDto) {
+    public User createUser(UserRequestDto userRequestDto) {
         try {
-            name = userDto.getName();
-            accountNumber = Integer.parseInt(userDto.getAccountNumber());
-            balance = new BigDecimal(userDto.getBalance());
+            name = userRequestDto.getName();
+            accountNumber = Integer.parseInt(userRequestDto.getAccountNumber());
+            balance = new BigDecimal(userRequestDto.getBalance());
 
             User user = User.builder()
                     .name(name)
@@ -42,15 +43,15 @@ public class UserService {
         }
     }
 
-    public User updateUser(UserDto userDto) {
+    public User updateUser(UserResponseDto userResponseDto) {
         try {
-            name = userDto.getName();
-            accountNumber = Integer.parseInt(userDto.getAccountNumber());
-            balance = new BigDecimal(userDto.getBalance());
-            if (userDto.getId() == null) {
+            name = userResponseDto.getName();
+            accountNumber = Integer.parseInt(userResponseDto.getAccountNumber());
+            balance = new BigDecimal(userResponseDto.getBalance());
+            if (userResponseDto.getId() == null) {
                 throw new IllegalArgumentException("User ID is required for update.");
             }
-            id = Long.parseLong(userDto.getId());
+            id = Long.parseLong(userResponseDto.getId());
             User user = User.builder()
                     .id(id)
                     .name(name)
@@ -64,10 +65,10 @@ public class UserService {
         }
     }
 
-    public List<UserDto> listUsers() {
+    public List<UserResponseDto> listUsers() {
         try {
             Iterable<User> usersIterable = userRepository.findAll();
-            return UserDto.convertToDtoList(usersIterable);
+            return UserResponseDto.convertToDtoList(usersIterable);
         } catch (DataAccessException e) {
             e.printStackTrace();
             throw new UserNotFoundException("Not possible to list Users", e);

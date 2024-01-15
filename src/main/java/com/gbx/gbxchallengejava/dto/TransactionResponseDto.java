@@ -14,23 +14,27 @@ import java.util.stream.StreamSupport;
 @NoArgsConstructor
 @Data
 @Builder
-public class TransactionDto {
+public class TransactionResponseDto {
+
+    private String id;
     private String userOriginId;
     private String userDestinationId;
     private String value;
     private String date;
 
-    public static TransactionDto convertToDto(Transaction transaction) {
-        return TransactionDto.builder()
+    public static TransactionResponseDto convertToDto(Transaction transaction) {
+        return TransactionResponseDto.builder()
                 .userOriginId(String.valueOf(transaction.getOrigin()))
                 .userDestinationId(String.valueOf(transaction.getDestination()))
                 .value(String.valueOf(transaction.getValue()))
+                .id(String.valueOf(transaction.getId()))
                 .date(String.valueOf(transaction.getDate()))
                 .build();
     }
-    public static List<TransactionDto> convertToDtoList(List<Transaction> transactionIterable) {
+
+    public static List<TransactionResponseDto> convertToDtoList(List<Transaction> transactionIterable) {
         return StreamSupport.stream(transactionIterable.spliterator(), false)
-                .map(TransactionDto::convertToDto)
+                .map(TransactionResponseDto::convertToDto)
                 .collect(Collectors.toList());
     }
 }

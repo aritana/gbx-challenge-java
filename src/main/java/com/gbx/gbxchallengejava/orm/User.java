@@ -1,10 +1,7 @@
 package com.gbx.gbxchallengejava.orm;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,9 +20,11 @@ public class User {
     private Integer accountNumber;
     private BigDecimal balance;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "destination")
     private List<Transaction> transactionsSent;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "origin")
     private List<Transaction> transactionsReceived;
 }

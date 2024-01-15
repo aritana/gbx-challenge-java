@@ -1,6 +1,7 @@
 package com.gbx.gbxchallengejava.service;
 
-import com.gbx.gbxchallengejava.dto.UserDto;
+import com.gbx.gbxchallengejava.dto.UserRequestDto;
+import com.gbx.gbxchallengejava.dto.UserResponseDto;
 import com.gbx.gbxchallengejava.exception.UserNotFoundException;
 import com.gbx.gbxchallengejava.orm.User;
 import com.gbx.gbxchallengejava.repository.UserRepository;
@@ -23,7 +24,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 class UserServiceTest {
-
     @Mock
     private UserRepository userRepository;
 
@@ -32,45 +32,45 @@ class UserServiceTest {
 
     private User user1;
     private User user2;
-    private UserDto userDto;
+    private UserRequestDto userRequestDto;
+    private UserResponseDto userResponseDto;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
         createUsers();
-        createUserDto();
+        createUsersDto();
     }
 
     @Test
     void shoudUserBeCreatedTest() {
-        assertDoesNotThrow(() -> userService.createUser(userDto));
+        assertDoesNotThrow(() -> userService.createUser(userRequestDto));
         Mockito.verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 
     @Test
     void shouldThrowsExceptionIfErrorCreateUserTest() {
         doThrow(RuntimeException.class).when(userRepository).save(any(User.class));
-        assertThrows(UserNotFoundException.class, () -> userService.createUser(userDto));
+        assertThrows(UserNotFoundException.class, () -> userService.createUser(userRequestDto));
     }
 
     @Test
     void shouldUserBeUpdatedTest() {
-        UserDto userDto = new UserDto();
-        userDto.setId("1");
-        userDto.setName("Updated User");
-        userDto.setAccountNumber("654321");
-        userDto.setBalance("200");
+        UserResponseDto userResponseDto = new UserResponseDto();
+        userResponseDto.setId("1");
+        userResponseDto.setName("Updated User");
+        userResponseDto.setAccountNumber("654321");
+        userResponseDto.setBalance("200");
 
         when(userRepository.save(any(User.class))).thenReturn(new User());
-        assertDoesNotThrow(() -> userService.updateUser(userDto));
+        assertDoesNotThrow(() -> userService.updateUser(userResponseDto));
         Mockito.verify(userRepository, Mockito.times(1)).save(any(User.class));
     }
 
     @Test
     void shouldThrowsExceptionIfErrorUpdateUserTest() {
-        userDto.setId("1");
         doThrow(RuntimeException.class).when(userRepository).save(any(User.class));
-        assertThrows(UserNotFoundException.class, () -> userService.updateUser(userDto));
+        assertThrows(UserNotFoundException.class, () -> userService.updateUser(userResponseDto));
     }
 
     @Test
@@ -79,14 +79,13 @@ class UserServiceTest {
                 user1,
                 user2
         ));
-        List<UserDto> userDtoList = userService.listUsers();
-        assertNotNull(userDtoList);
-        assertEquals(2, userDtoList.size());
+        List<UserResponseDto> userResponseDtoList = userService.listUsers();
+        assertNotNull(userResponseDtoList);
+        assertEquals(2, userResponseDtoList.size());
     }
 
     @Test
     void shouldThrowsExceptionIfUserNotListedTest() {
-        userDto.setId("1");
         doThrow(UserNotFoundException.class).when(userRepository).findAll();
         assertThrows(UserNotFoundException.class, () -> userService.listUsers());
     }
@@ -134,13 +133,20 @@ class UserServiceTest {
                 .accountNumber(123457)
                 .balance(new BigDecimal(100))
                 .build();
-        userRepository.saveAll(List.of(user1, user2));
     }
 
-    public void createUserDto() {
-        userDto = new UserDto();
-        userDto.setName("John Doe");
-        userDto.setAccountNumber("123456");
-        userDto.setBalance("100");
+    public void createUsersDto() {
+        userRequestDto = UserRequestDto.builder()
+                .name("John Doe")
+                .accountNumber("123456")
+                .balance("100")
+                .build();
+
+        userResponseDto = UserResponseDto.builder()
+                .id("1")
+                .name("John Doe")
+                .accountNumber("123456")
+                .balance("100")
+                .build();
     }
 }

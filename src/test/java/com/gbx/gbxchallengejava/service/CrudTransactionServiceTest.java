@@ -1,6 +1,7 @@
 package com.gbx.gbxchallengejava.service;
 
-import com.gbx.gbxchallengejava.dto.TransactionDto;
+import com.gbx.gbxchallengejava.dto.TransactionRequestDto;
+import com.gbx.gbxchallengejava.dto.TransactionResponseDto;
 import com.gbx.gbxchallengejava.orm.Transaction;
 import com.gbx.gbxchallengejava.orm.User;
 import com.gbx.gbxchallengejava.repository.TransactionRepository;
@@ -42,12 +43,12 @@ class CrudTransactionServiceTest {
         when(crudUserService.findUserById(1L)).thenReturn(origin);
         when(crudUserService.findUserById(2L)).thenReturn(destination);
 
-        TransactionDto transactionDto = TransactionDto.builder()
+        TransactionRequestDto transactionRequestDto = TransactionRequestDto.builder()
                 .userOriginId("1")
                 .userDestinationId("2")
                 .value("100.00").build();
 
-        assertDoesNotThrow(() -> transactionService.createTransaction(transactionDto));
+        assertDoesNotThrow(() -> transactionService.createTransaction(transactionRequestDto));
 
         verify(transactionRepository, times(1)).save(argThat(transaction ->
                 transaction.getOrigin().getId().equals(1L) &&
@@ -57,13 +58,14 @@ class CrudTransactionServiceTest {
 
     @Test
     void shouldThrowExceptionOnNotCreateTransactionTest() {
-        TransactionDto transactionDto = new TransactionDto();
-        transactionDto.setUserOriginId("1");
-        transactionDto.setUserDestinationId("2");
-        transactionDto.setValue("100.00");
+        TransactionRequestDto transactionRequestDto = TransactionRequestDto.builder()
+                .userOriginId("1")
+                .userDestinationId("2")
+                .value("100.00")
+                .build();
 
         when(crudUserService.findUserById(Mockito.anyLong())).thenThrow(RuntimeException.class);
-        assertThrows(RuntimeException.class, () -> transactionService.createTransaction(transactionDto));
+        assertThrows(RuntimeException.class, () -> transactionService.createTransaction(transactionRequestDto));
     }
 
     @Test
@@ -71,16 +73,16 @@ class CrudTransactionServiceTest {
         Transaction transaction = new Transaction();
 
         when(transactionRepository.findAll()).thenReturn(Collections.singletonList(transaction));
-        List<TransactionDto> result = transactionService.listAllTransactions();
+        List<TransactionResponseDto> result = transactionService.listAllTransactions();
         assertEquals(1, result.size());
     }
 
     @Test
     void shouldThrowExceptionOnNotListTransactionsTest() {
-        TransactionDto transactionDto = new TransactionDto();
-        transactionDto.setUserOriginId("1");
-        transactionDto.setUserDestinationId("2");
-        transactionDto.setValue("100.00");
+        TransactionResponseDto transactionResponseDto = new TransactionResponseDto();
+        transactionResponseDto.setUserOriginId("1");
+        transactionResponseDto.setUserDestinationId("2");
+        transactionResponseDto.setValue("100.00");
 
         when(transactionRepository.findAll()).thenThrow(RuntimeException.class);
         assertThrows(RuntimeException.class, () -> transactionService.listAllTransactions());
@@ -91,7 +93,7 @@ class CrudTransactionServiceTest {
         Long destinationUserId = 1L;
         Transaction transaction = new Transaction();
         when(transactionRepository.findByDestination(destinationUserId)).thenReturn(Collections.singletonList(transaction));
-        List<TransactionDto> result = transactionService.findTransactionsByDestination(destinationUserId);
+        List<TransactionResponseDto> result = transactionService.findTransactionsByDestination(destinationUserId);
         assertEquals(1, result.size());
     }
 
@@ -107,7 +109,7 @@ class CrudTransactionServiceTest {
         Long destinationUserId = 1L;
         Transaction transaction = new Transaction();
         when(transactionRepository.findByOrigin(destinationUserId)).thenReturn(Collections.singletonList(transaction));
-        List<TransactionDto> result = transactionService.findTransactionsByOrigin(destinationUserId);
+        List<TransactionResponseDto> result = transactionService.findTransactionsByOrigin(destinationUserId);
         assertEquals(1, result.size());
     }
 

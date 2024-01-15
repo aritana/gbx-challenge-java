@@ -1,7 +1,8 @@
 package com.gbx.gbxchallengejava.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gbx.gbxchallengejava.dto.UserDto;
+import com.gbx.gbxchallengejava.dto.UserRequestDto;
+import com.gbx.gbxchallengejava.dto.UserResponseDto;
 import com.gbx.gbxchallengejava.orm.User;
 import com.gbx.gbxchallengejava.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -22,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
+@SpringBootTest
 class UserControllerTest {
     @Mock
     private UserService userService;
@@ -41,12 +43,12 @@ class UserControllerTest {
     }
     @Test
     void shouldCreateUserTest() throws Exception {
-        UserDto userDto = new UserDto("1", "Created User", "123", "100");
-        doReturn(user1).when(userService).createUser(any(UserDto.class));
+        UserResponseDto userResponseDto = new UserResponseDto("1", "Created User", "123", "100");
+        doReturn(user1).when(userService).createUser(any(UserRequestDto.class));
 
         mockMvc.perform(post("/adicionarUsuario")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDto)))
+                        .content(objectMapper.writeValueAsString(userResponseDto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.name").value("Created User"))
@@ -55,12 +57,12 @@ class UserControllerTest {
     }
     @Test
     void shouldUpdateUserTest() throws Exception {
-        UserDto userDto = new UserDto("2", "Updated User", "124", "150");
-        doReturn(user2).when(userService).updateUser(any(UserDto.class));
+        UserResponseDto userResponseDto = new UserResponseDto("2", "Updated User", "124", "150");
+        doReturn(user2).when(userService).updateUser(any(UserResponseDto.class));
 
         mockMvc.perform(put("/atualizarUsuario")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDto)))
+                        .content(objectMapper.writeValueAsString(userResponseDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("2"))
                 .andExpect(jsonPath("$.name").value("Updated User"))
@@ -69,8 +71,8 @@ class UserControllerTest {
     }
     @Test
     void shouldListUsersTest() throws Exception {
-        UserDto userDto = new UserDto("3", "Listed User", "125", "100.00");
-        doReturn(Collections.singletonList(userDto)).when(userService).listUsers();
+        UserResponseDto userResponseDto = new UserResponseDto("3", "Listed User", "125", "100.00");
+        doReturn(Collections.singletonList(userResponseDto)).when(userService).listUsers();
 
         mockMvc.perform(get("/listarUsuarios"))
                 .andExpect(status().isOk())

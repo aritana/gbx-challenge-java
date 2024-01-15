@@ -1,6 +1,7 @@
 package com.gbx.gbxchallengejava.service;
 
-import com.gbx.gbxchallengejava.dto.TransactionDto;
+import com.gbx.gbxchallengejava.dto.TransactionRequestDto;
+import com.gbx.gbxchallengejava.dto.TransactionResponseDto;
 import com.gbx.gbxchallengejava.exception.TransactionNotFoundException;
 import com.gbx.gbxchallengejava.orm.Transaction;
 import com.gbx.gbxchallengejava.orm.User;
@@ -28,40 +29,39 @@ public class TransactionService {
     @Autowired
     UserService userService;
 
-    public void createTransaction(TransactionDto transactionDto) {
+    public Transaction createTransaction(TransactionRequestDto transactionRequestDto) {
         try {
-
-            User origin = userService.findUserById(Long.parseLong(transactionDto.getUserOriginId()));
-            User destination = userService.findUserById(Long.parseLong(transactionDto.getUserDestinationId()));
+            User origin = userService.findUserById(Long.parseLong(transactionRequestDto.getUserOriginId()));
+            User destination = userService.findUserById(Long.parseLong(transactionRequestDto.getUserDestinationId()));
 
             Transaction transaction = Transaction.builder()
                     .origin(origin)
                     .destination(destination)
-                    .value(new BigDecimal(transactionDto.getValue()))
+                    .value(new BigDecimal(transactionRequestDto.getValue()))
                     .date(LocalDateTime.now())
                     .build();
-            transactionRepository.save(transaction);
+            return transactionRepository.save(transaction);
 
         } catch (DataAccessException e) {
             e.printStackTrace();
             throw new TransactionNotFoundException("Not possible to create Transaction", e);
         }
     }
-    public List<TransactionDto> listAllTransactions() {
+    public List<TransactionResponseDto> listAllTransactions() {
         try {
             Iterable<Transaction> transactionsIterable = transactionRepository.findAll();
             return StreamSupport.stream(transactionsIterable.spliterator(), false)
-                    .map(TransactionDto::convertToDto)
+                    .map(TransactionResponseDto::convertToDto)
                     .collect(Collectors.toList());
         } catch (DataAccessException e) {
             e.printStackTrace();
             throw new TransactionNotFoundException("Not possible to list Transactions", e);
         }
     }
-    public List<TransactionDto> findTransactionsByDestination(Long id) {
+    public List<TransactionResponseDto> findTransactionsByDestination(Long id) {
         try {
             List<Transaction> transactions = transactionRepository.findByDestination(id);
-            return TransactionDto.convertToDtoList(transactions);
+            return TransactionResponseDto.convertToDtoList(transactions);
 
         } catch (DataAccessException e) {
             e.printStackTrace();
@@ -69,10 +69,10 @@ public class TransactionService {
         }
     }
 
-    public List<TransactionDto> findTransactionsByOrigin(Long id) {
+    public List<TransactionResponseDto> findTransactionsByOrigin(Long id) {
         try {
             List<Transaction> transactions = transactionRepository.findByOrigin(id);
-            return TransactionDto.convertToDtoList(transactions);
+            return TransactionResponseDto.convertToDtoList(transactions);
 
         } catch (DataAccessException e) {
             e.printStackTrace();
